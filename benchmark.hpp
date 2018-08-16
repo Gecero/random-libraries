@@ -1,5 +1,6 @@
 #include <chrono>
 #include <vector>
+#include <thread>
 #ifdef _WIN32
 #include <intrin.h>
 #endif
@@ -11,7 +12,8 @@ private:
 	uint64_t cp1 = 0;
 	uint64_t cp2 = 0;
 	std::vector<std::chrono::duration<T>> benchmarkTimes;
-	std::vector<long long> benchmarkCycles;
+	std::vector<uint64_t> benchmarkCycles;
+	uint64_t benchmarks = 0;
 	#ifdef _WIN32
 		uint64_t cpuCycles() {
 			return __rdtsc();
@@ -26,9 +28,14 @@ private:
 public:
 	benchmark() {
 		benchmarkTimes.clear();
+		benchmarkCycles.clear();
 		tp1 = std::chrono::system_clock::now();
 		tp2 = std::chrono::system_clock::now();
 
+	}
+	~benchmark() {
+		benchmarkTimes.clear();
+		benchmarkCycles.clear();
 	}
 	T getAverageBenchmarkTimes() {
 		double sum = 0;
@@ -42,18 +49,39 @@ public:
 			sum += benchmarkCycles[i];
 		return (T)(sum / benchmarkCycles.size());
 	}
-
+	uint64_t getNumberOfBenchmarks() {
+		return benchmarks;
+	}
 	void runFunctionBenchmark(void(*function)()) {
 		tp1 = std::chrono::system_clock::now();
 		cp1 = cpuCycles();
 		function();
 		cp2 = cpuCycles();
 		tp2 = std::chrono::system_clock::now();
-		std::chrono::duration<T> tmp = tp2 - tp1;
-		uint64_t tmp2 = cp2 - cp1;
-		benchmarkCycles.reserve(benchmarkCycles.size()+1);
-		benchmarkTimes.reserve(benchmarkTimes.size()+1);
-		benchmarkTimes.push_back(tmp);
-		benchmarkCycles.push_back(tmp2);
+		std::chrono::duration<T> dur = tp2 - tp1;
+		uint64_t cyc = cp2 - cp1;
+		benchmarkTimes.reserve(benchmarkTimes.size() + 1);
+		benchmarkCycles.reserve(benchmarkCycles.size() + 1);
+		benchmarkTimes.push_back(dur);
+		benchmarkCycles.push_back(cyc);
+		benchmarks++;
+	}
+
+	void startIndependentBenchmark() {
+		tp1 = std::chrono::system_clock::now();
+		tp2 = std::chrono::system_clock::now();
+		cp1 = cpuCycles();
+		cp2 = cpuCycles();
+	}
+	void stopIndependentBenchmark() {
+		cp2 = cpuCycles();
+		tp2 = std::chrono::system_clock::now();
+		std::chrono::duration<T> dur = tp2 - tp1;
+		uint64_t cyc = cp2 - cp1;
+		benchmarkTimes.reserve(benchmarkTimes.size() + 1);
+		benchmarkCycles.reserve(benchmarkCycles.size() + 1);
+		benchmarkTimes.push_back(dur);
+		benchmarkCycles.push_back(cyc);
+		benchmarks++;
 	}
 };
