@@ -7,8 +7,8 @@
 template<typename T>
 class benchmark {
 private:
-	std::chrono::system_clock::time_point tp1;
-	std::chrono::system_clock::time_point tp2;
+	std::chrono::steady_clock::time_point tp1;
+	std::chrono::steady_clock::time_point tp2;
 	uint64_t cp1 = 0;
 	uint64_t cp2 = 0;
 	std::vector<std::chrono::duration<T>> benchmarkTimes;
@@ -29,8 +29,8 @@ public:
 	benchmark() {
 		benchmarkTimes.clear();
 		benchmarkCycles.clear();
-		tp1 = std::chrono::system_clock::now();
-		tp2 = std::chrono::system_clock::now();
+		tp1 = std::chrono::steady_clock::now();
+		tp2 = std::chrono::steady_clock::now();
 
 	}
 	~benchmark() {
@@ -53,11 +53,11 @@ public:
 		return benchmarks;
 	}
 	void runFunctionBenchmark(void(*function)()) {
-		tp1 = std::chrono::system_clock::now();
+		tp1 = std::chrono::steady_clock::now();
 		cp1 = cpuCycles();
 		function();
 		cp2 = cpuCycles();
-		tp2 = std::chrono::system_clock::now();
+		tp2 = std::chrono::steady_clock::now();
 		std::chrono::duration<T> dur = tp2 - tp1;
 		uint64_t cyc = cp2 - cp1;
 		benchmarkTimes.reserve(benchmarkTimes.size() + 1);
@@ -68,14 +68,14 @@ public:
 	}
 
 	void startIndependentBenchmark() {
-		tp1 = std::chrono::system_clock::now();
-		tp2 = std::chrono::system_clock::now();
+		tp1 = std::chrono::steady_clock::now();
+		tp2 = std::chrono::steady_clock::now();
 		cp1 = cpuCycles();
 		cp2 = cpuCycles();
 	}
 	void stopIndependentBenchmark() {
 		cp2 = cpuCycles();
-		tp2 = std::chrono::system_clock::now();
+		tp2 = std::chrono::steady_clock::now();
 		std::chrono::duration<T> dur = tp2 - tp1;
 		uint64_t cyc = cp2 - cp1;
 		benchmarkTimes.reserve(benchmarkTimes.size() + 1);
