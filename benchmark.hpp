@@ -9,8 +9,12 @@
 #include <vector>
 #ifdef _WIN32
 	#include <Windows.h>
-#elif defined(__linux__)
-	#include <cstring>
+#elif defined(__APPLE__)
+	#error this library does not support the macintosh blast processing technology yet
+#endif
+
+#if !defined(__cplusplus) || !__cplusplus >= 201103L
+	#error this library needs c++11
 #endif
 
 template<typename T>
