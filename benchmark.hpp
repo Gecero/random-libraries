@@ -28,9 +28,9 @@ private:
 	std::vector<uint64_t> benchmarkCycles;
 	uint64_t benchmarks;
 	#ifdef _WIN32
-		__forceinline inline uint64_t __fastcall cpuCycles() { return __rdtsc(); }
+		__forceinline inline uint64_t __fastcall cpuCycles() noexcept { return __rdtsc(); }
 	#elif defined(__linux__)
-		uint64_t cpuCycles() {
+		inline uint64_t cpuCycles() {
 			unsigned int lo, hi;
 			__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
 			return ((uint64_t)hi << 32) | lo;
