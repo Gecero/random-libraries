@@ -43,13 +43,13 @@ public:
 		benchmarkCycles.clear();
 		benchmarks = 0;
 	}
-	// destruct the benchmarker
+	// deconstruct the benchmarker
 	~benchmark() {
 		benchmarkTimes.clear();
 		benchmarkCycles.clear();
 	}
 	// get the average run times of your code from the benchmarks in seconds
-	T getAverageBenchmarkTimes() {
+	T getAverageBenchmarkTime() {
 		long double sum = 0;
 		uint64_t size = benchmarkTimes.size();
 		for (int i = 0; i < size; i++)
