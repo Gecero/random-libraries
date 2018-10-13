@@ -1,11 +1,27 @@
-#include <Windows.h>
+#ifndef HACKERPRINT_HPP
+#define HACKERPRINT_HPP
+#ifdef _WIN32
+	#include <Windows.h>
+#else
+	#include<stdio.h>
+#endif
+
 #include <cmath>
 #include <iostream>
+#include <chrono>
+#include <thread>
+
 class hackerPrint {
 private:
-static inline void gotoxy(int x, int y) {
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { (SHORT)x, (SHORT)y });
-}
+#ifdef _WIN32
+	static inline void gotoxy(int x, int y) {
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { (SHORT)x, (SHORT)y });
+	}
+#else
+	static inline void gotoxy(int x,int y) {
+		printf("%c[%d;%df",0x1B,y,x);
+	}
+#endif
 
 
 public:
@@ -18,10 +34,11 @@ public:
 				gotoxy(x + j, y);
 				writtenText += (char)(txt[j] + j / ((i ^ j) + textCompleteness));
 				std::cout << (char)(txt[j] + j / ((i ^ j) + textCompleteness));
-				Sleep(sleepInterval);
+				std::this_thread::sleep_for(std::chrono::milliseconds(sleepInterval));
 			}
 			if (writtenText == text && i > 5) // > 5 because at the start the text is just like the normal text and gets over the time changed
 				return;
 		}
 	}
 };
+#endif
