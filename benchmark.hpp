@@ -19,6 +19,13 @@
 
 template<typename T>
 class benchmark {
+	static_assert(!(std::is_convertible<T, std::chrono::seconds>::value ||
+					std::is_convertible<T, std::chrono::milliseconds>::value ||
+					std::is_convertible<T, std::chrono::microseconds>::value ||
+					std::is_convertible<T, std::chrono::nanoseconds>::value ||
+					std::is_convertible<T, std::chrono::minutes>::value ||
+					std::is_convertible<T, std::chrono::hours>::value),
+					"std::chrono time units are not supported yet");
 private:
 	std::chrono::high_resolution_clock::time_point timeSync1;
 	std::chrono::high_resolution_clock::time_point timeSync2;
