@@ -1,6 +1,6 @@
 //TO-DO:
 //	- memory usage benchmarking
-//	- mac compability
+//	- mac compability (could be compatible but i didn't tested it yet)
 //	- compability for std::chrono::seconds, std::chrono::milliseconds and so on
 
 #ifndef BENCHMARK_HPP
@@ -8,16 +8,20 @@
 #include <chrono>
 #include <vector>
 #ifdef _WIN32
-	#include <Windows.h>
-#elif defined(__APPLE__)
-	#error this library does not support the macintosh blast processing technology yet
+	#include <intrin.h>
+#else
+	#include <x86intrin.h>
 #endif
 
 #if !defined(__cplusplus) || !__cplusplus >= 201103L
 	#error this library needs c++11
 #endif
 
-template<typename T>
+#ifdef __APPLE__
+	#warning there is no offical support for apple platforms
+#endif
+
+template<class T>
 class benchmark {
 	static_assert(!(std::is_convertible<T, std::chrono::seconds>::value ||
 					std::is_convertible<T, std::chrono::milliseconds>::value ||
@@ -34,15 +38,6 @@ private:
 	std::vector<std::chrono::duration<T>> benchmarkTimes;
 	std::vector<uint64_t> benchmarkCycles;
 	uint64_t benchmarks;
-	#ifdef _WIN32
-		__forceinline inline uint64_t __fastcall cpuCycles() noexcept { return __rdtsc(); }
-	#elif defined(__linux__)
-		inline uint64_t cpuCycles() {
-			unsigned int lo, hi;
-			__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
-			return ((uint64_t)hi << 32) | lo;
-		}
-	#endif
 public:
 	// make a benchmarker that can test the speed of your code
 	benchmark() {
@@ -81,11 +76,24 @@ public:
 		benchmarkCycles.reserve(estimatedNumberOfBenchmarks);
 	}
 	// benchmark a function
+	template<typename return_type>
+	return_type runFunctionBenchmark(return_type(*function)()) {
+		return_type returnValue;
+		timeSync1 = std::chrono::high_resolution_clock::now();
+		cycleSync1 = __rdtsc();
+		returnValue = function();
+		cycleSync2 = __rdtsc();
+		timeSync2 = std::chrono::high_resolution_clock::now();
+		benchmarkTimes.push_back(timeSync2 - timeSync1);
+		benchmarkCycles.push_back(cycleSync2 - cycleSync1);
+		benchmarks++;
+		return returnValue;
+	}
 	void runFunctionBenchmark(void(*function)()) {
 		timeSync1 = std::chrono::high_resolution_clock::now();
-		cycleSync1 = cpuCycles();
+		cycleSync1 = __rdtsc();
 		function();
-		cycleSync2 = cpuCycles();
+		cycleSync2 = __rdtsc();
 		timeSync2 = std::chrono::high_resolution_clock::now();
 		benchmarkTimes.push_back(timeSync2 - timeSync1);
 		benchmarkCycles.push_back(cycleSync2 - cycleSync1);
@@ -94,11 +102,11 @@ public:
 	// start an independent benchmark that needs no function as argument
 	void startIndependentBenchmark() {
 		timeSync1 = std::chrono::high_resolution_clock::now();
-		cycleSync1 = cpuCycles();
+		cycleSync1 = __rdtsc();
 	}
 	// stop the independent benchmark
 	void stopIndependentBenchmark() {
-		cycleSync2 = cpuCycles();
+		cycleSync2 = __rdtsc();
 		timeSync2 = std::chrono::high_resolution_clock::now();
 		benchmarkTimes.push_back(timeSync2 - timeSync1);
 		benchmarkCycles.push_back(cycleSync2 - cycleSync1);
