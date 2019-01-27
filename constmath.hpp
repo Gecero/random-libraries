@@ -1,13 +1,10 @@
-// TO-DO:
-// - fully add <cmath> (http://www.cplusplus.com/reference/cmath/)
-// - fully add <complex> (http://www.cplusplus.com/reference/complex/)
-// - prototypes
-// - more type compability
-
 #if !defined(__cplusplus) || !__cplusplus > 201402L
-	#error this library needs c++17
-#elif !defined(CONSTMATH_HPP)
+	#error this library requires c++17
+#endif	
+#ifndef CONSTMATH_HPP
 #define CONSTMATH_HPP
+#warning this library is deprecated. it's unstable and not being developed anymore
+
 namespace gcr {
 	static inline auto ceil =		[](long double a)									constexpr -> uint64_t		{ return (uint64_t)(a); };
 	static inline auto floor =		[](long double a)									constexpr -> uint64_t		{ return (uint64_t)(a + 0.5); };

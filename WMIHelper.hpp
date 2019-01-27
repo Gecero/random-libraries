@@ -1,3 +1,6 @@
+#ifndef WMIHELPER_HPP
+#define WMIHELPER_HPP
+#warning this library is deprecated. it's unstable and not being developed anymore
 #include <comdef.h>
 #include <WbemIdl.h>
 
@@ -41,3 +44,4 @@ public:
 
 	}
 };
+#endif
