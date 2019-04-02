@@ -24,7 +24,8 @@ namespace gcr {
 	class invalid_csv_structure;
 	class database;
 	class database_parse;
-	struct decimal;
+	struct decimal_t;
+	struct text_t;
 
 	class not_found : public std::exception {
 	public:
@@ -237,7 +238,7 @@ namespace gcr {
 		}
 	};
 
-	struct decimal {
+	struct decimal_t {
 	private:
 		unsigned char precision = 7;
 		uint64_t multiplicator = pow(10, precision);
@@ -252,10 +253,10 @@ namespace gcr {
 		}
 
 	public:
-		decimal() {}
-		decimal(double x) { set(x); }
-		decimal(decimal & x) { precision = x.precision; multiplicator = x.multiplicator; value = x.value; }
-		decimal(decimal * x) { precision = x->precision; multiplicator = x->multiplicator; value = x->value; }
+		decimal_t() {}
+		decimal_t(double x) { set(x); }
+		decimal_t(decimal_t & x) { precision = x.precision; multiplicator = x.multiplicator; value = x.value; }
+		decimal_t(decimal_t * x) { precision = x->precision; multiplicator = x->multiplicator; value = x->value; }
 
 		// set precision where x represents the numbers decimal places
 		void setPrecision(unsigned char x) {
@@ -263,18 +264,40 @@ namespace gcr {
 			multiplicator = pow(10, x);
 		}
 
-		decimal & operator=(decimal & x) noexcept {
+		decimal_t & operator=(decimal_t & x) noexcept {
 			precision = x.precision;
 			multiplicator = x.multiplicator;
 			value = x.value;
 		}
 
-		inline decimal & operator=(double x) noexcept { set(x); return *this; }
+		inline decimal_t & operator=(double x) noexcept { set(x); return *this; }
 		inline operator double() noexcept { return get(); }
-		inline decimal & operator+=(double x) noexcept { set(get() + x); return *this; }
-		inline decimal & operator-=(double x) noexcept { set(get() - x); return *this; }
-		inline decimal & operator*=(double x) noexcept { set(get() * x); return *this; }
-		inline decimal & operator/=(double x) noexcept { set(get() / x); return *this; }
+		inline decimal_t & operator+=(double x) noexcept { set(get() + x); return *this; }
+		inline decimal_t & operator-=(double x) noexcept { set(get() - x); return *this; }
+		inline decimal_t & operator*=(double x) noexcept { set(get() * x); return *this; }
+		inline decimal_t & operator/=(double x) noexcept { set(get() / x); return *this; }
+	};
+
+	// for saving text in databases
+	struct text_t {
+	private:
+		char * text;
+		size_t len;
+
+		void set(char * x) { text = x; len = strlen(x); }
+		void set(const char * x) { text = const_cast<char *>(x); len = strlen(x); }
+		void set(std::string x) { text = const_cast<char *>(x.c_str()); len = x.length(); }
+
+	public:
+		text_t() { }
+
+		inline operator char *() noexcept { return text; }
+		inline operator const char *() noexcept { return (const char *)text; }
+		inline operator std::string() noexcept { return std::string(text); }
+
+		inline text_t & operator=(char * x) noexcept { set(x); return *this; }
+		inline text_t & operator=(const char * x) noexcept { set(x); return *this; }
+		inline text_t & operator=(std::string x) noexcept { set(x); return *this; }
 	};
 
 }
