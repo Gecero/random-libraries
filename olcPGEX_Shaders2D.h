@@ -9,8 +9,8 @@
 	|                 Advanced 2D Screen Shaders                  |
 	+-------------------------------------------------------------+
 
-	What the heck this?
-	~~~~~~~~~~~~~~~~~~~
+	What is this?
+	~~~~~~~~~~~~~
 	This is an extension to the olcPixelGameEngine, which provides
 	advanced 2D screen shaders. To use it you have to follow theese
 	simple steps:
@@ -38,9 +38,8 @@
 	Links
 	~~~~~
 	YouTube:		https://www.youtube.com/channel/UCWVVUuunLpgpoG_HVo2sGxQ
-	Discord:		https://discord.gg/9PmAkQR
 	GitHub:			https://github.com/Gecero
-	Homepage:		http://youtube.alpmann.de
+	Homepage:		https://youtube.alpmann.de
 
 	Author
 	~~~~~~
